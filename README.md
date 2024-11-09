@@ -1,3 +1,2 @@
-# HW09 Template
-
-For 2024F 6063B [HW09](https://6063b.github.io/homework/09/#/programming)
+# HW09 
+I started by incorporating some previous in-class code that could identify when a pixel is red or blue and change the color. I knew that yellow would be trickier since it's outside the RGB trichotomy so I tried to incorporate the similarity values outlines in the homework instructions, with a slider to change the value of how close a pixel had to be to the Mondrian yellow to be considered "yellow." I ran into problems with the slider not resetting. 

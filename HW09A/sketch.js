@@ -1,9 +1,10 @@
-
 // original image, to use as reference for pixel colors
 let oImg;
 
 // display image, to modify and display on canvas
 let mImg;
+
+let slider;
 
 function preload() {
   oImg = loadImage("../assets/mondriaan.jpg");
@@ -15,23 +16,79 @@ function setup() {
   oImg.resize(0, height);
   mImg.resize(0, height);
 
-  // we'll read pixel color info from the oImg, so let's load its pixels
+  // Load pixel data from the original image
   oImg.loadPixels();
 
-  // TODO: setup sliders and other DOM/html elements here
+  // Slider to control similarity threshold for yellow detection
+  slider = createSlider(0, 255, 80); 
+  slider.position(10, 10);
+  slider.size(150);
+
+}
+
+function isYellow(r, g, b, threshold) {
+  let MONDRIAN_YELLOW = color(250, 200, 60);  
+
+  let redForYellow = red(MONDRIAN_YELLOW);
+  let greenForYellow = green(MONDRIAN_YELLOW);
+  let blueForYellow = blue(MONDRIAN_YELLOW);
+
+  let similarity = dist(r, g, b, redForYellow, greenForYellow, blueForYellow);
+
+  // Pixel is considered yellow if the distance is less than the threshold
+  return similarity < threshold;
 }
 
 function draw() {
-  // we'll modify and display the mImg object, so let's load its pixels
+  // Load pixel data from the display image for modification
   mImg.loadPixels();
 
-  // TODO: do any filtering and pixel modifications here.
-  //       This involves a for loop of some kind.
-  //       Remember to read from the oImg pixels and write to the mImg.
+  // Get the threshold value from the slider
+  let similarityThreshold = slider.value();
 
-  // we'll display the updated mImg, so let's update its pixels
+  // Loop through each pixel in the original image
+  for (let idx = 0; idx < oImg.pixels.length; idx += 4) {
+    let redVal = oImg.pixels[idx + 0];
+    let greenVal = oImg.pixels[idx + 1];
+    let blueVal = oImg.pixels[idx + 2];
+    let alphaVal = oImg.pixels[idx + 3];
+
+    // Reference for other color definitions (Mondrian colors)
+    let MONDRIAN_BLUE = color(5, 50, 110);
+    let MONDRIAN_RED = color(240, 40, 30);
+
+    let pixelIsRed = redVal > 2 * greenVal && redVal > 2 * blueVal && redVal > 128;
+    let pixelIsBlue = blueVal > greenVal && blueVal > 2 * redVal && blueVal > 100;
+    let pixelIsYellow = isYellow(redVal, greenVal, blueVal, similarityThreshold);
+
+    push()
+    if (pixelIsBlue) {
+      mImg.pixels[idx + 0] = 228;   // Set Blue
+      mImg.pixels[idx + 1] = 0;   // Set Green
+      mImg.pixels[idx + 2] = 102;  // Set Red
+    }
+    pop()
+
+    push()
+    if (pixelIsRed) {
+      mImg.pixels[idx + 0] = 3;  // Set Blue
+      mImg.pixels[idx + 1] = 206;   // Set Green
+      mImg.pixels[idx + 2] = 164;   // Set Red
+    }
+    pop()
+
+    push()
+    if (pixelIsYellow) {
+      mImg.pixels[idx + 0] = 251;  // Set Blue
+      mImg.pixels[idx + 1] = 77;  // Set Green
+      mImg.pixels[idx + 2] = 61;    // Set Red
+    }
+    pop()
+  }
+
+  // Update the modified pixel data in the display image
   mImg.updatePixels();
 
-  // draw the display image
+  // Display the modified image
   image(mImg, 0, 0);
 }
