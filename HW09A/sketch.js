@@ -19,8 +19,8 @@ function setup() {
   // Load pixel data from the original image
   oImg.loadPixels();
 
-  // Slider to control similarity threshold for yellow detection
-  slider = createSlider(0, 255, 80); 
+  // Slider to control yellowness
+  slider = createSlider(80, 160, 80); 
   slider.position(10, 10);
   slider.size(150);
 
@@ -29,10 +29,13 @@ function setup() {
 function isYellow(r, g, b, threshold) {
   let MONDRIAN_YELLOW = color(250, 200, 60);  
 
+  //pulls the RGB values of mondrian yellow
   let redForYellow = red(MONDRIAN_YELLOW);
   let greenForYellow = green(MONDRIAN_YELLOW);
   let blueForYellow = blue(MONDRIAN_YELLOW);
 
+  //poked around other code and was led to EUCLIDIAN DISTANCE; the alternate would be to 
+  //calculate the absolute value between a given R/G/B value and the corresponding value for mondrian yellow
   let similarity = dist(r, g, b, redForYellow, greenForYellow, blueForYellow);
 
   // Pixel is considered yellow if the distance is less than the threshold
@@ -86,9 +89,7 @@ function draw() {
     pop()
   }
 
-  // Update the modified pixel data in the display image
+  // update the modified pixel data in the display image and display
   mImg.updatePixels();
-
-  // Display the modified image
   image(mImg, 0, 0);
 }
